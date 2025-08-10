@@ -1,4 +1,4 @@
-name: Build and Deploy (Hugo + PostCSS)
+name: Build and Deploy (Hugo + Pages)
 
 on:
   push:
@@ -6,16 +6,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true   # テーマをサブモジュールで入れているなら必須
+          submodules: true
 
       - uses: actions/setup-node@v4
         with:
@@ -24,7 +29,7 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build CSS (PostCSS)
+      - name: Build CSS
         run: npm run build:css
 
       - name: Setup Hugo
@@ -36,8 +41,17 @@ jobs:
       - name: Build site
         run: hugo --minify
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
