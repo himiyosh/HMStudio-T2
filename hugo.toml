@@ -1,3 +1,4 @@
+## NOTE: CI workflow overrides this baseURL via --baseURL using actions/configure-pages output
 baseURL = "https://himiyosh.github.io/"
 languageCode = "ja-jp"
 title = "HMStudio"
