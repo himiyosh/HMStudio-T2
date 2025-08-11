@@ -1,5 +1,6 @@
 ## NOTE: CI workflow overrides this baseURL via --baseURL using actions/configure-pages output
-baseURL = "https://himiyosh.github.io/"
+# Set to project path so local builds and GitHub Pages resolve correctly
+baseURL = "https://himiyosh.github.io/HMStudio-T2/"
 languageCode = "ja-jp"
 title = "HMStudio"
 theme = "careercanvas"
